@@ -4,10 +4,11 @@ import "./Home.css";
 class Home extends Component {
   render() {
     return (
-      <div className="card">
-        <div className="container">
-          <div className="Title">Home</div>
-          <div className="content">Selamat Datang Di Pelatihan React JS</div>
+      <div className="container-fluid bg-image">
+        <div className="container d-flex justify-content-center align-items-center text-content">
+          <div style={{ marginBlock: "auto", paddingTop: 340 }}>
+            <h1 style={{ fontSize: 90, fontWeight: "bold" }}>Hello min!!</h1>
+          </div>
         </div>
       </div>
     );

@@ -14,6 +14,7 @@ router.get('/pakets', (req, res) => {
   });
 });
 
+
 router.get('/pakets/:id', (req, res) => {
   const paketId = req.params.id;
   Paket.getPaketById(paketId, (err, paket) => {

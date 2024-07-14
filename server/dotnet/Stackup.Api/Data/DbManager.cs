@@ -364,9 +364,12 @@ public class DbManager
 								string query = "UPDATE users SET username = @username, password = @password, role = @role, nama_pelanggan = @nama_pelanggan, alamat = @alamat, no_telp = @no_telp WHERE id = @Id";
 								using (MySqlCommand command = new MySqlCommand(query, connection))
 								{
+										// Set the role to "customer" if it's not provided
+										string role = user.role?.ToString() ?? "customer";
+										
 										command.Parameters.AddWithValue("@username", user.username);
 										command.Parameters.AddWithValue("@password", user.password);
-										command.Parameters.AddWithValue("@role", user.role?.ToString());
+										command.Parameters.AddWithValue("@role", role);
 										command.Parameters.AddWithValue("@nama_pelanggan", user.nama_pelanggan);
 										command.Parameters.AddWithValue("@alamat", user.alamat);
 										command.Parameters.AddWithValue("@no_telp", user.no_telp);
@@ -383,6 +386,7 @@ public class DbManager
 						return 0;
 				}
 		}
+
 
 
     // DELETE
@@ -408,6 +412,64 @@ public class DbManager
 						return 0;
 				}
 		}
+
+        //! ================================
+        public User Login(string username, string password)
+        {
+            User user = null;
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT * FROM users WHERE username = @Username AND password = @Password";
+                MySqlCommand command = new MySqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Username", username);
+                command.Parameters.AddWithValue("@Password", password);
+                connection.Open();
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        user = new User
+                        {
+                            id = Convert.ToInt32(reader["id"]),
+                            username = reader["username"].ToString(),
+                            password = reader["password"].ToString(),
+                            role = reader["role"].ToString(),
+                            nama_pelanggan = reader["nama_pelanggan"].ToString(),
+                            alamat = reader["alamat"].ToString(),
+                            no_telp = reader["no_telp"].ToString(),
+                        };
+                    }
+                }
+            }
+            return user;
+        }
+
+				public List<string> GetUsernames()
+				{
+						try
+						{
+								using (_connection)
+								{
+										_connection.Open();
+										string query = "SELECT username FROM users";
+										MySqlCommand command = new MySqlCommand(query, _connection);
+										using (MySqlDataReader reader = command.ExecuteReader())
+										{
+												List<string> usernames = new List<string>();
+												while (reader.Read())
+												{
+														usernames.Add(reader.GetString("username"));
+												}
+												return usernames;
+										}
+								}
+						}
+						catch (Exception ex)
+						{
+								Console.WriteLine(ex.Message);
+								throw; // Re-throw for proper error handling by controller
+						}
+				}
 
 }
 

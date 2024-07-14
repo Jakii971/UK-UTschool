@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import "../Mahasiswa.css";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import "./paket.css"; // Sesuaikan dengan path file paket.css Anda
 
-function DataPaket() {
+const DataPaket = () => {
   const [dataPaket, setDataPaket] = useState([]);
+  const [dataSubkategori, setDataSubkategori] = useState({});
 
   useEffect(() => {
     fetchData();
@@ -14,9 +14,21 @@ function DataPaket() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:5000/api/pakets");
-      const data = await response.data;
-      setDataPaket(data);
+      const responsePaket = await axios.get("http://127.0.0.1:5000/api/pakets");
+      setDataPaket(responsePaket.data);
+
+      // Fetch subkategori data to map id_subkategori to nama_subkategori
+      const responseSubkategori = await axios.get(
+        "http://127.0.0.1:5000/api/subkategoris"
+      );
+      const subkategoriMap = responseSubkategori.data.reduce(
+        (map, subkategori) => {
+          map[subkategori.id] = subkategori.nama_subkategori;
+          return map;
+        },
+        {}
+      );
+      setDataSubkategori(subkategoriMap);
     } catch (error) {
       console.log("Error Fetching data: ", error);
     }
@@ -45,25 +57,24 @@ function DataPaket() {
       width: "100px",
     },
     {
-      name: "Id Kategori",
-      selector: (row) => row.id_subkategori,
+      name: "Tempat Wisata",
+      selector: (row) => dataSubkategori[row.id_subkategori] || "Unknown",
       sortable: true,
-      minWidth: "100px",
-      width: "180px",
+      minWidth: "200px",
+      width: "233px",
     },
     {
-      name: "Nama Paket Destinasi",
+      name: "Paket Destinasi",
       selector: (row) => row.nama_paket,
       sortable: true,
       minWidth: "200px",
       width: "233px",
     },
     {
-      name: "Durasi",
+      name: "Durasi Liburan",
       selector: (row) => row.durasi,
       sortable: true,
-      minWidth: "300px",
-      width: "300px",
+      width: "200px",
     },
     {
       name: "Harga",
@@ -75,7 +86,10 @@ function DataPaket() {
     {
       name: "Ubah",
       selector: (row) => (
-        <Link to={"/dataPaket-edit/" + row.id} className="btn btn-primary">
+        <Link
+          to={`/dataPaket-edit/${row.id}`}
+          className="btn btn-primary btn-sm"
+        >
           Edit
         </Link>
       ),
@@ -86,7 +100,10 @@ function DataPaket() {
     {
       name: "Hapus",
       selector: (row) => (
-        <button onClick={() => deleteData(row.id)} className="btn btn-danger">
+        <button
+          onClick={() => deleteData(row.id)}
+          className="btn btn-danger btn-sm"
+        >
           Delete
         </button>
       ),
@@ -97,19 +114,29 @@ function DataPaket() {
   ];
 
   return (
-    <div className="card">
-      <div className="container">
-        <div className="Titel">Data Paket Destinasi</div>
-        <div className="conten">
-          <h2>Data Paket Destinasi</h2>
-          <Link to="/dataPaket-add" className="btn btn-primary">
-            + Data Paket Destinasi
+    <div className="container mt-4">
+      <div className="card">
+        <div className="card-header bg-primary text-white">
+          <h3>Data Paket Destinasi</h3>
+        </div>
+        <div className="card-body">
+          <Link to="/dataPaket-add" className="btn btn-success mb-3">
+            + Tambah Data
           </Link>
-          <DataTable columns={columns} data={dataPaket} pagination />
+          <DataTable
+            columns={columns}
+            data={dataPaket}
+            pagination
+            striped
+            highlightOnHover
+            responsive
+            noHeader
+            className="table"
+          />
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default DataPaket;

@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import "../Mahasiswa.css";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import "./kategori.css"; // Ubah sesuai path file kategori.css Anda
 
-
-function DataKategori() {
+const DataKategori = () => {
   const [datakategori, setDatakategori] = useState([]);
 
   useEffect(() => {
@@ -14,12 +12,11 @@ function DataKategori() {
   }, []);
 
   const fetchData = async () => {
-    try{
+    try {
       const response = await axios.get("http://127.0.0.1:5000/api/kategoris");
-      const data = await response.data;
-      setDatakategori(data);
-    } catch (error){
-      console.log("Error Fetching data: ", error)
+      setDatakategori(response.data);
+    } catch (error) {
+      console.log("Error Fetching data: ", error);
     }
   };
 
@@ -45,10 +42,10 @@ function DataKategori() {
       width: "100px",
     },
     {
-      name: "Nama Kategori",
+      name: "Nama Kota",
       selector: (row) => row.nama_kategori,
       sortable: true,
-      width: "233px",
+      width: "200px",
     },
     {
       name: "Deskripsi",
@@ -61,9 +58,9 @@ function DataKategori() {
       selector: (row) => row.image,
       cell: (row) => (
         <img
-          src={`http://127.0.0.1:5000${row.image}`} //! http://127.0.0.1:5000(/uploads/image.jpg)
+          src={`http://127.0.0.1:5000${row.image}`} //! Sesuaikan dengan path API Anda
           alt={row.nama_kategori}
-          style={{ width: "100px" }}
+          style={{ width: "100px", height: "auto" }}
         />
       ),
       sortable: true,
@@ -72,7 +69,10 @@ function DataKategori() {
     {
       name: "Ubah",
       selector: (row) => (
-        <Link to={"/datakategori-edit/" + row.id} className="btn btn-primary">
+        <Link
+          to={`/datakategori-edit/${row.id}`}
+          className="btn btn-primary btn-sm"
+        >
           Edit
         </Link>
       ),
@@ -84,7 +84,7 @@ function DataKategori() {
       selector: (row) => (
         <button
           onClick={() => deleteData(row.id)}
-          className="btn btn-danger"
+          className="btn btn-danger btn-sm"
         >
           Delete
         </button>
@@ -95,17 +95,29 @@ function DataKategori() {
   ];
 
   return (
-    <div className="card">
-      <div className="container">
-        <div className="Titel">Data Kategori</div>
-        <div className="conten">
-          <h2>Data Kategori</h2>
-          <Link to="/datakategori-add" className="btn btn-primary"> + Data Kategori</Link>
-          <DataTable columns={columns} data={datakategori} pagination />
+    <div className="container mt-4">
+      <div className="card">
+        <div className="card-header bg-primary text-white">
+          <h3>Data Kota Destinasi</h3>
+        </div>
+        <div className="card-body">
+          <Link to="/datakategori-add" className="btn btn-success mb-3">
+            + Tambah Data
+          </Link>
+          <DataTable
+            columns={columns}
+            data={datakategori}
+            pagination
+            striped
+            highlightOnHover
+            responsive
+            noHeader
+            className="table"
+          />
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default DataKategori;

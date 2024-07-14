@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import "../Mahasiswa.css";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import "./sub.css";
 
-function DataSubkategori() {
+const DataSubkategori = () => {
   const [dataSubkategori, setDataSubkategori] = useState([]);
 
   useEffect(() => {
@@ -14,9 +13,10 @@ function DataSubkategori() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:5000/api/subkategoris");
-      const data = await response.data;
-      setDataSubkategori(data);
+      const response = await axios.get(
+        "http://127.0.0.1:5000/api/subkategoris"
+      );
+      setDataSubkategori(response.data);
     } catch (error) {
       console.log("Error Fetching data: ", error);
     }
@@ -46,28 +46,31 @@ function DataSubkategori() {
       width: "100px",
     },
     {
-      name: "Id Kategori",
-      selector: (row) => row.id_kategori,
+      name: "Kota Destinasi",
+      selector: (row) => row.nama_kategori,
       sortable: true,
+      width: "150px",
     },
     {
-      name: "Nama Subkategori Destinasi",
+      name: "Tempat Destinasi",
       selector: (row) => row.nama_subkategori,
       sortable: true,
+      width: "150px",
     },
     {
       name: "Deskripsi",
       selector: (row) => row.deskripsi,
       sortable: true,
+      width: "350px",
     },
     {
       name: "Image",
       selector: (row) => row.image,
       cell: (row) => (
         <img
-          src={`http://127.0.0.1:5000${row.image}`} //! http://127.0.0.1:5000(/uploads/image.jpg)
+          src={`http://127.0.0.1:5000${row.image}`} //! Adjust the path as per your API response
           alt={row.nama_subkategori}
-          style={{ width: "100px" }}
+          style={{ width: "100px", height: "auto" }}
         />
       ),
       sortable: true,
@@ -76,43 +79,54 @@ function DataSubkategori() {
       name: "Ubah",
       selector: (row) => (
         <Link
-          to={"/datasubkategori-edit/" + row.id}
-          className="btn btn-primary"
+          to={`/datasubkategori-edit/${row.id}`}
+          className="btn btn-primary btn-sm"
         >
           Edit
         </Link>
       ),
       sortable: true,
-      minWidth: "150px",
+      width: "100px",
     },
     {
       name: "Hapus",
       selector: (row) => (
-        <button onClick={() => deleteData(row.id)} className="btn btn-danger">
+        <button
+          onClick={() => deleteData(row.id)}
+          className="btn btn-danger btn-sm"
+        >
           Delete
         </button>
       ),
       sortable: true,
-      minWidth: "150px",
       width: "100px",
     },
   ];
 
   return (
-    <div className="card">
-      <div className="container">
-        <div className="Titel">Data Subkategori Destinasi</div>
-        <div className="conten">
-          <h2>Data Subkategori Destinasi</h2>
-          <Link to="/datasubkategori-add" className="btn btn-primary">
-            {" "}
-            + Data Subkategori Destinasi
+    <div className="container mt-4">
+      <div className="card">
+        <div className="card-header bg-primary text-white">
+          <h3>Data Tempat Destinasi</h3>
+        </div>
+        <div className="card-body">
+          <Link to="/datasubkategori-add" className="btn btn-success mb-3">
+            + Tambah Data
           </Link>
-          <DataTable columns={columns} data={dataSubkategori} pagination />
+          <DataTable
+            columns={columns}
+            data={dataSubkategori}
+            pagination
+            striped
+            highlightOnHover
+            responsive
+            noHeader
+            className="table"
+          />
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default DataSubkategori;

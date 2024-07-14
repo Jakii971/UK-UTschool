@@ -1,31 +1,39 @@
 import React, { useState, useEffect } from "react";
-import "../Mahasiswa.css";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import "./user.css"; // Assuming this is your custom CSS file
 
 function DataUser() {
-  //define state
-  const [datauser, setDatauser] = useState([]);
+  const [dataUser, setDataUser] = useState([]);
 
-  //useEffect hook
   useEffect(() => {
-    //panggil method "fetchData"
-    fectData();
+    fetchData();
   }, []);
 
-  //function "fetchData"
-  const fectData = async () => {
-    //fetching
-    const response = await axios.get("https://localhost:7245/api/User");
-    //get response data
-    const data = await response.data;
-    //assign response data to state "datamahasiswa"
-    setDatauser(data);
-    console.log(data);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:5000/api/users");
+      setDataUser(response.data);
+    } catch (error) {
+      console.log("Error Fetching data: ", error);
+    }
   };
+
+  const deleteData = async(id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this data?"
+    );
+    if(confirmDelete) {
+      try{
+        await axios.delete(`http://127.0.0.1:5000/api//user/delete/${id}`);
+        setDataUser(dataUser.filter((kategori) => kategori.id !== id));
+      } catch (error){
+        console.log("Error deleting data: ", error);
+      }
+    }
+  }
 
   const columns = [
     {
@@ -58,33 +66,49 @@ function DataUser() {
       selector: (row) => row.no_telp,
       sortable: true,
     },
-    // {
-    //   name: "Ubah",
-    //   selector: (row) => (
-    //     <Link to={"/datauser_edit/" + row.id} className="btn btn-primary">
-    //       Edit
-    //     </Link>
-    //   ),
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Hapus",
-    //   selector: (row) => (
-    //     <Link to={"/datauser_delete/" + row.id} className="btn btn-danger">
-    //       Delete
-    //     </Link>
-    //   ),
-    //   sortable: true,
-    // },
+    {
+      name: "Ubah",
+      cell: (row) => (
+        <Link to={`/datauser_edit/${row.id}`} className="btn btn-primary">
+          Edit
+        </Link>
+      ),
+      sortable: true,
+    },
+    {
+      name: "Hapus",
+      selector: (row) => (
+        <button
+          onClick={() => deleteData(row.id)}
+          className="btn btn-danger btn-sm"
+        >
+          Delete
+        </button>
+      ),
+      sortable: true,
+    },
   ];
+
   return (
-    <div className="card">
-      <div className="container">
-        <div className="Titel">Data User</div>
-        <div className="conten">
-          <h2>Data User</h2>
-          <Link to="/datauser_add" className="btn btn-primary">+ Data User</Link>
-          <DataTable columns={columns} data={datauser.data} pagination />
+    <div className="container mt-4">
+      <div className="card">
+        <div className="card-header bg-primary text-white">
+          <h3>Data User</h3>
+        </div>
+        <div className="card-body">
+          <Link to="/datauser_add" className="btn btn-success">
+            + Data User
+          </Link>
+          <DataTable
+            columns={columns}
+            data={dataUser}
+            pagination
+            striped
+            highlightOnHover
+            responsive
+            noHeader
+            className="table"
+          />
         </div>
       </div>
     </div>

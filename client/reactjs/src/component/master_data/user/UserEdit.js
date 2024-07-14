@@ -5,12 +5,12 @@ import { useParams } from "react-router-dom";
 
 function UserEdit() {
   const { id } = useParams();
-
   const [formValue, setFormValue] = useState({
     id: "",
-    nama: "",
-    username: "",
-    role: "",
+    id_subkategori: "",
+    nama_paket: "",
+    durasi: "",
+    harga: "",
   });
 
   useEffect(() => {
@@ -19,20 +19,15 @@ function UserEdit() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        "https://localhost:7092/User/GetByIdUser?id=" + id
-      );
-      const data = await response.data;
-      const dataId = data[0].id;
-      const dataNama = data[0].nama;
-      const dataStock = data[0].username;
-      const dataHarga = data[0].role;
+      const response = await axios.get(`http://127.0.0.1:5000/api/pakets/${id}`);
+      const data = response.data[0];
 
       setFormValue({
-        id: dataId,
-        nama: dataNama,
-        username: dataStock,
-        role: dataHarga,
+        id: data.id,
+        id_subkategori: data.id_subkategori,
+        nama_paket: data.nama_paket,
+        durasi: data.durasi,
+        harga: data.harga,
       });
     } catch (error) {
       console.error(error);
@@ -50,14 +45,9 @@ function UserEdit() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await axios.put(
-        "https://localhost:7092/User/UpdateUser?id=" + id,
-        formValue
-      );
-
-      window.location.href = "/datauser";
-
+      await axios.put(`http://127.0.0.1:5000/api/paket/update/${id}`, formValue);
       alert("Data berhasil diubah");
+      window.location.href = "/datapaket";
     } catch (error) {
       console.error(error);
       alert("Error saat mengubah data");
@@ -65,47 +55,24 @@ function UserEdit() {
   };
 
   return (
-    <div className="card">
+    <div className="card mt-5">
       <div className="container">
         <div className="title">Edit Data User {id}</div>
         <div className="content">
           <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              name="id"
-              placeholder="Masukkan Id"
-              value={formValue.id}
-              onChange={handleChange}
-            />
-            <br />
-            <br />
-            <input
-              type="text"
-              name="nama"
-              placeholder="Masukkan Nama user"
-              value={formValue.nama}
-              onChange={handleChange}
-            />
-            <br />
-            <br />
-            <input
-              type="text"
-              name="username"
-              placeholder="Masukkan username"
-              value={formValue.username}
-              onChange={handleChange}
-            />
-            <br />
-            <br />
-            <input
-              type="text"
-              name="role"
-              placeholder="Masukkan Harga Satuan"
-              value={formValue.role}
-              onChange={handleChange}
-            />
-            <br />
-            <br />
+            {["id", "id_subkategori", "nama_paket", "durasi", "harga"].map((field) => (
+              <div key={field}>
+                <input
+                  type="text"
+                  name={field}
+                  placeholder={`Masukkan ${field}`}
+                  value={formValue[field]}
+                  onChange={handleChange}
+                />
+                <br />
+                <br />
+              </div>
+            ))}
             <button type="submit" className="btn btn-primary">
               Simpan
             </button>

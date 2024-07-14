@@ -47,7 +47,6 @@ const upload = multer({ storage: storage });
 
 // Route untuk membuat kategori dengan mengunggah gambar
 router.post("/subkategori/create", upload.single("image"), (req, res) => {
-  
   const { id_kategori, nama_subkategori, deskripsi } = req.body;
   const image = req.file ? `/uploads/${req.file.filename}` : null;
 

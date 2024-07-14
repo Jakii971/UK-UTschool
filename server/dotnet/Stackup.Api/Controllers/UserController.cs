@@ -47,7 +47,7 @@ public class UserController : Controller
             }
 
             // Jika role sesuai, lanjutkan dengan membuat pengguna
-            System.Diagnostics.Debug.WriteLine(user);
+            System.Diagnostics.Debug.WriteLine(user); //ini console log
             response.status = 200;
             response.message = "Success";
             _dbManager.CreateUser(user);
@@ -59,6 +59,42 @@ public class UserController : Controller
         }
 
         return Ok(response);
+    }
+
+    [HttpGet]
+    [Route("/User/Usernames")] // Use a descriptive route
+    public IActionResult GetUsernames()
+    {
+        try
+        {
+            List<string> usernames = _dbManager.GetUsernames();
+            return Ok(usernames); // Return list of usernames as JSON
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return StatusCode(500, "Internal Server Error"); // Handle errors gracefully
+        }
+    }
+
+    
+    // Login
+    [HttpGet("/User/login")]
+    public IActionResult Login(string username, string password)
+    {
+        try
+        {
+            User user = _dbManager.Login(username, password);
+            if (user == null)
+            {
+                return Unauthorized("Invalid username or password");
+            }
+            return Ok(new { id=user.id, role = user.role, nama_pelanggan = user.nama_pelanggan, alamat = user.alamat, no_telp = user.no_telp });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
 

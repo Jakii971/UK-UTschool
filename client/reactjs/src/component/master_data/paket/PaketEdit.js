@@ -68,7 +68,7 @@ function UserEdit() {
   };
 
   return (
-    <div className="card">
+    <div className="card mt-5">
       <div className="container">
         <div className="title">Edit Data User {id}</div>
         <div className="content">
