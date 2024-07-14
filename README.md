@@ -10,5 +10,5 @@ Role: customer
 
 
 
- git init dulu ya sayang
+ npm install dulss
  
